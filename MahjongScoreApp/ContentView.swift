@@ -8,32 +8,32 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Today's Session") {
+                Section("本日の対局") {
                     if let today = sessions.first(where: { Calendar.current.isDateInToday($0.date) }) {
-                        NavigationLink("Resume Today's Session", destination: DailySessionView(session: today))
+                        NavigationLink("本日の対局を再開", destination: DailySessionView(session: today))
                     } else {
-                        Button("Start New Session Today") {
+                        Button("本日の対局を開始") {
                             let newSession = DailySession(date: Date())
                             modelContext.insert(newSession)
                         }
                     }
                 }
                 
-                Section("Past Sessions") {
+                Section("過去の対局履歴") {
                     ForEach(sessions.filter { !Calendar.current.isDateInToday($0.date) }) { session in
                         NavigationLink(session.date.formatted(date: .abbreviated, time: .omitted), destination: DailySessionView(session: session))
                     }
                 }
                 
-                Section("Players & Stats") {
-                    NavigationLink("Manage Players & View Stats", destination: PlayersListView())
+                Section("プレイヤー管理") {
+                    NavigationLink("プレイヤーと成績", destination: PlayersListView())
                 }
                 
-                Section("Settings") {
-                    NavigationLink("Rule Settings", destination: SettingsView())
+                Section("設定") {
+                    NavigationLink("ルール設定", destination: SettingsView())
                 }
             }
-            .navigationTitle("Mahjong Score")
+            .navigationTitle("麻雀スコア記録")
         }
     }
 }

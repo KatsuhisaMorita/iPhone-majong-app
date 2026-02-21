@@ -29,35 +29,35 @@ struct GameInputView: View {
     
     var body: some View {
         Form {
-            Section("Settings") {
-                Text("Auto 4th Score: Type scores for 3 players to auto-fill the 4th.")
+            Section("入力支援") {
+                Text("3人の点数を入力すると、4人目の点数は自動計算されます。")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
             ForEach(0..<4, id: \.self) { index in
-                Section("Player \(index + 1)") {
-                    Picker("Select Player", selection: $inputs[index].player) {
-                        Text("None").tag(Player?.none)
+                Section("プレイヤー \(index + 1)") {
+                    Picker("プレイヤー選択", selection: $inputs[index].player) {
+                        Text("未選択").tag(Player?.none)
                         ForEach(players) { p in
                             Text(p.name).tag(Player?.some(p))
                         }
                     }
                     
-                    Picker("Seat Order (Tie-breaker)", selection: $inputs[index].seatOrder) {
-                        Text("1: East (起家)").tag(1)
-                        Text("2: South").tag(2)
-                        Text("3: West").tag(3)
-                        Text("4: North").tag(4)
+                    Picker("席順 (同着時の判定用)", selection: $inputs[index].seatOrder) {
+                        Text("1: 東 (起家)").tag(1)
+                        Text("2: 南").tag(2)
+                        Text("3: 西").tag(3)
+                        Text("4: 北").tag(4)
                     }
                     
-                    TextField("Raw Score (e.g. 25000)", text: $inputs[index].scoreString)
+                    TextField("持ち点 (例: 25000)", text: $inputs[index].scoreString)
                         .keyboardType(.numberPad)
                         .onChange(of: inputs[index].scoreString) { _ in
                             autoCalculate4th()
                         }
                     
-                    Stepper("Chips: \(inputs[index].chips)", value: $inputs[index].chips)
+                    Stepper("チップ獲得枚数: \(inputs[index].chips)", value: $inputs[index].chips)
                 }
             }
             
@@ -65,14 +65,14 @@ struct GameInputView: View {
                 Text(errorMessage).foregroundColor(.red)
             }
             
-            Button("Save Game") {
+            Button("半荘成績を保存") {
                 saveGame()
             }
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity, alignment: .center)
             .disabled(inputs.contains(where: { $0.player == nil }) || inputs.contains(where: { Int($0.scoreString) == nil }))
         }
-        .navigationTitle("New Game")
+        .navigationTitle("新規半荘入力")
     }
     
     private func autoCalculate4th() {
@@ -97,19 +97,19 @@ struct GameInputView: View {
         let rawScores = inputs.map { Int($0.scoreString) ?? 0 }
         let total = rawScores.reduce(0, +)
         if total != settings.baseScore * 4 {
-            errorMessage = "Total score must be \(settings.baseScore * 4). Currently \(total)."
+            errorMessage = "4人の合計点が \(settings.baseScore * 4) 点になるようにしてください。（現在: \(total)点）"
             return
         }
         
         let playerIds = inputs.compactMap { $0.player?.id }
         if Set(playerIds).count != 4 {
-            errorMessage = "Please select 4 distinct players."
+            errorMessage = "4人の異なるプレイヤーを選択してください。"
             return
         }
         
         let seats = inputs.map { $0.seatOrder }
         if Set(seats).count != 4 {
-            errorMessage = "Please map each player to a distinct seat order (1 to 4) for tie-breaking."
+            errorMessage = "席順（起家〜北家）はそれぞれ異なるものを選択してください。"
             return
         }
         

@@ -13,18 +13,18 @@ struct PlayersListView: View {
             ForEach(players) { player in
                 VStack(alignment: .leading) {
                     Text(player.name).font(.headline)
-                    Text("Total Games: \(player.totalGames) | Total Score: \(String(format: "%.1f", player.totalScore))")
+                    Text("対局数: \(player.totalGames) 半荘 | 累計スコア: \(String(format: "%.1f", player.totalScore))")
                         .font(.subheadline)
-                    Text("Avg Rank: \(String(format: "%.2f", player.averageRank)) | Top-2 Rate: \(String(format: "%.1f%%", player.top2Rate * 100))")
+                    Text("平均順位: \(String(format: "%.2f", player.averageRank)) | 連対率 (Top-2): \(String(format: "%.1f%%", player.top2Rate * 100))")
                         .font(.caption)
-                    Text("Last Place Avoidance: \(String(format: "%.1f%%", player.lastPlaceAvoidanceRate * 100))")
+                    Text("ラス回避率: \(String(format: "%.1f%%", player.lastPlaceAvoidanceRate * 100))")
                         .font(.caption)
                 }
                 .padding(.vertical, 4)
             }
             .onDelete(perform: deletePlayers)
         }
-        .navigationTitle("Players & Stats")
+        .navigationTitle("プレイヤー実績")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: { showingAddPlayer = true }) {
@@ -32,14 +32,14 @@ struct PlayersListView: View {
                 }
             }
         }
-        .alert("Add New Player", isPresented: $showingAddPlayer) {
-            TextField("Player Name", text: $newPlayerName)
-            Button("Add") {
+        .alert("新規プレイヤー追加", isPresented: $showingAddPlayer) {
+            TextField("名前", text: $newPlayerName)
+            Button("追加") {
                 let newPlayer = Player(name: newPlayerName)
                 modelContext.insert(newPlayer)
                 newPlayerName = ""
             }
-            Button("Cancel", role: .cancel) {
+            Button("キャンセル", role: .cancel) {
                 newPlayerName = ""
             }
         }

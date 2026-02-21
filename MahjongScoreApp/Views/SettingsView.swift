@@ -16,27 +16,27 @@ struct SettingsView: View {
     
     var body: some View {
         Form {
-            Section("Uma (ウマ)") {
-                Stepper("1st Place: +\(umaFirst)", value: $umaFirst)
-                Stepper("2nd Place: +\(umaSecond)", value: $umaSecond)
-                Text("Note: 3rd and 4th place will be -\(umaSecond) and -\(umaFirst). \nDefault 10-30 is One-Three (1st+30, 2nd+10). \nOne-Two is 10-20.")
+            Section("ウマ設定") {
+                Stepper("1位: +\(umaFirst)", value: $umaFirst)
+                Stepper("2位: +\(umaSecond)", value: $umaSecond)
+                Text("※ 3位は -\(umaSecond)、4位は -\(umaFirst) となります。\nワンスリーの場合は 10-30 を、ワンツーの場合は 10-20 を設定してください。")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
-            Section("Tobi (飛び賞)") {
-                Toggle("Enable Tobi", isOn: $isTobiEnabled)
+            Section("飛び賞 (箱下)") {
+                Toggle("飛び賞を有効にする", isOn: $isTobiEnabled)
                 if isTobiEnabled {
-                    Stepper("Tobi Bonus (for 1st): +\(tobiBonus)", value: $tobiBonus)
-                    Stepper("Tobi Penalty (for busted): -\(tobiPenalty)", value: $tobiPenalty)
+                    Stepper("飛ばした人のボーナス: +\(tobiBonus)", value: $tobiBonus)
+                    Stepper("飛んだ人のペナルティ: -\(tobiPenalty)", value: $tobiPenalty)
                 }
             }
             
-            Section("Chips (チップ)") {
-                Stepper("Points per chip: \(chipRate)", value: $chipRate)
+            Section("チップ") {
+                Stepper("1枚あたりのスコア: \(chipRate)", value: $chipRate)
             }
         }
-        .navigationTitle("Rule Settings")
+        .navigationTitle("ルール設定")
         .onAppear {
             if let existing = settingsList.first {
                 self.settings = existing

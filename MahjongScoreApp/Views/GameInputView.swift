@@ -34,7 +34,7 @@ struct GameInputView: View {
                 Section(inputs[index].player.name) {
                     TextField("持ち点 (例: 25000)", text: $inputs[index].scoreString)
                         .keyboardType(.numberPad)
-                        .onChange(of: inputs[index].scoreString) { _ in
+                        .onChange(of: inputs[index].scoreString) { _, _ in
                             autoCalculate4th()
                             checkTieBreaker()
                         }

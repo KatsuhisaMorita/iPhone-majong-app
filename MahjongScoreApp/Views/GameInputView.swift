@@ -20,8 +20,6 @@ struct GameInputView: View {
     @State private var errorMessage = ""
     @State private var needsTieBreaker = false
     
-    @State private var errorMessage = ""
-    
     var body: some View {
         Form {
             Section("入力支援") {

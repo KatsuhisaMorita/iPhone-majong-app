@@ -4,11 +4,17 @@ import SwiftData
 struct DailySessionView: View {
     let session: DailySession
     
+    @Query private var settingsArray: [RuleSettings]
+    @State private var showingChipInput = false
+    
     var body: some View {
         List {
             Section("概要") {
                 Text("日付: \(session.date.formatted(date: .abbreviated, time: .omitted))")
                 Text("プレイ数: \(session.games.count)半荘")
+                if let players = session.players {
+                    Text("参加者: \(players.map { $0.name }.joined(separator: ", "))")
+                }
             }
             
             Section("本日の合計成績") {
@@ -52,10 +58,25 @@ struct DailySessionView: View {
                 }
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            Button("セッション終了 (チップ精算)") {
+                showingChipInput = true
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(UIColor.systemBackground).shadow(radius: 2))
+        }
+        .sheet(isPresented: $showingChipInput) {
+            SessionChipInputView(session: session)
+        }
     }
     
     private func calculateDailyTotals(for session: DailySession) -> [Player: Double] {
         var totals = [Player: Double]()
+        let chipRate = settingsArray.first?.chipRate ?? 0
+        
+        // Add game scores
         for game in session.games {
             for score in game.playerScores {
                 if let p = score.player {
@@ -63,6 +84,15 @@ struct DailySessionView: View {
                 }
             }
         }
+        
+        // Add session chip scores
+        if let players = session.players {
+            for player in players {
+                let chips = session.chipResults[player.id.uuidString] ?? 0
+                totals[player, default: 0.0] += Double(chips * chipRate)
+            }
+        }
+        
         return totals
     }
 }

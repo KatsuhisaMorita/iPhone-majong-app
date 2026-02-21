@@ -20,6 +20,8 @@
 		9F1A42642B90C0000000A3F1 /* Views/GameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A42632B90C0000000A3F1 /* GameInputView.swift */; };
 		9F1A42662B90C0000000A3F1 /* Views/PlayersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A42652B90C0000000A3F1 /* PlayersListView.swift */; };
 		9F1A42682B90C0000000A3F1 /* Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A42672B90C0000000A3F1 /* SettingsView.swift */; };
+		9F2B43012B90D0000000A3F1 /* Views/SessionStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2B43002B90D0000000A3F1 /* SessionStartView.swift */; };
+		9F2B43032B90D0000000A3F1 /* Views/SessionChipInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2B43022B90D0000000A3F1 /* SessionChipInputView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		9F1A42632B90C0000000A3F1 /* GameInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInputView.swift; sourceTree = "<group>"; };
 		9F1A42652B90C0000000A3F1 /* PlayersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersListView.swift; sourceTree = "<group>"; };
 		9F1A42672B90C0000000A3F1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9F2B43002B90D0000000A3F1 /* SessionStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStartView.swift; sourceTree = "<group>"; };
+		9F2B43022B90D0000000A3F1 /* SessionChipInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionChipInputView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +120,8 @@
 				9F1A42632B90C0000000A3F1 /* GameInputView.swift */,
 				9F1A42652B90C0000000A3F1 /* PlayersListView.swift */,
 				9F1A42672B90C0000000A3F1 /* SettingsView.swift */,
+				9F2B43002B90D0000000A3F1 /* SessionStartView.swift */,
+				9F2B43022B90D0000000A3F1 /* SessionChipInputView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -201,6 +207,8 @@
 				9F1A42642B90C0000000A3F1 /* Views/GameInputView.swift in Sources */,
 				9F1A42662B90C0000000A3F1 /* Views/PlayersListView.swift in Sources */,
 				9F1A42682B90C0000000A3F1 /* Views/SettingsView.swift in Sources */,
+				9F2B43012B90D0000000A3F1 /* Views/SessionStartView.swift in Sources */,
+				9F2B43032B90D0000000A3F1 /* Views/SessionChipInputView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

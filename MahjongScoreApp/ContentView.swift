@@ -5,6 +5,9 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \DailySession.date, order: .reverse) private var sessions: [DailySession]
     
+    @State private var showingSessionStart = false
+    @State private var newlyCreatedSession: DailySession? = nil
+    
     var body: some View {
         NavigationStack {
             List {
@@ -12,13 +15,11 @@ struct ContentView: View {
                     if let today = sessions.first(where: { Calendar.current.isDateInToday($0.date) }) {
                         NavigationLink("本日の対局を再開", destination: DailySessionView(session: today))
                         Button("新しい対局を開始") {
-                            let newSession = DailySession(date: Date())
-                            modelContext.insert(newSession)
+                            showingSessionStart = true
                         }
                     } else {
                         Button("本日の対局を開始") {
-                            let newSession = DailySession(date: Date())
-                            modelContext.insert(newSession)
+                            showingSessionStart = true
                         }
                     }
                 }
@@ -38,6 +39,14 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("麻雀スコア記録")
+            .sheet(isPresented: $showingSessionStart) {
+                SessionStartView { session in
+                    newlyCreatedSession = session
+                }
+            }
+            .navigationDestination(item: $newlyCreatedSession) { session in
+                DailySessionView(session: session)
+            }
         }
     }
 }

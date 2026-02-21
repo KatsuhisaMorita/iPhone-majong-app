@@ -9,8 +9,17 @@ final class DailySession {
     @Relationship(deleteRule: .cascade, inverse: \GameRecord.dailySession)
     var games: [GameRecord] = []
     
-    init(date: Date = Date()) {
+    // The 4 players who are participating in this session
+    @Relationship(deleteRule: .nullify)
+    var players: [Player]? = []
+    
+    // Chips collected at the end of the session
+    // Mapping player ID (UUID string) to chip count
+    var chipResults: [String: Int] = [:]
+    
+    init(date: Date = Date(), players: [Player] = []) {
         self.id = UUID()
         self.date = date
+        self.players = players
     }
 }

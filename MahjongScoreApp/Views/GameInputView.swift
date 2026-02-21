@@ -3,10 +3,9 @@ import SwiftData
 
 struct GameScoreInput: Identifiable {
     let id = UUID()
-    var player: Player?
+    var player: Player
     var scoreString: String = ""
-    var chips: Int = 0
-    var seatOrder: Int = 1
+    var seatOrder: Int = 1 // Only used if tied
 }
 
 struct GameInputView: View {
@@ -15,15 +14,11 @@ struct GameInputView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @Query private var players: [Player]
     @Query private var settingsArray: [RuleSettings]
     
-    @State private var inputs: [GameScoreInput] = [
-        GameScoreInput(seatOrder: 1),
-        GameScoreInput(seatOrder: 2),
-        GameScoreInput(seatOrder: 3),
-        GameScoreInput(seatOrder: 4)
-    ]
+    @State private var inputs: [GameScoreInput] = []
+    @State private var errorMessage = ""
+    @State private var needsTieBreaker = false
     
     @State private var errorMessage = ""
     
@@ -35,29 +30,24 @@ struct GameInputView: View {
                     .foregroundColor(.secondary)
             }
             
-            ForEach(0..<4, id: \.self) { index in
-                Section("プレイヤー \(index + 1)") {
-                    Picker("プレイヤー選択", selection: $inputs[index].player) {
-                        Text("未選択").tag(Player?.none)
-                        ForEach(players) { p in
-                            Text(p.name).tag(Player?.some(p))
-                        }
-                    }
-                    
-                    Picker("席順 (同着時の判定用)", selection: $inputs[index].seatOrder) {
-                        Text("1: 東 (起家)").tag(1)
-                        Text("2: 南").tag(2)
-                        Text("3: 西").tag(3)
-                        Text("4: 北").tag(4)
-                    }
-                    
+            ForEach(0..<inputs.count, id: \.self) { index in
+                Section(inputs[index].player.name) {
                     TextField("持ち点 (例: 25000)", text: $inputs[index].scoreString)
                         .keyboardType(.numberPad)
                         .onChange(of: inputs[index].scoreString) { _ in
                             autoCalculate4th()
+                            checkTieBreaker()
                         }
                     
-                    Stepper("チップ獲得枚数: \(inputs[index].chips)", value: $inputs[index].chips)
+                    if needsTieBreaker {
+                        Picker("席順 (同着時の判定用)", selection: $inputs[index].seatOrder) {
+                            Text("1: 東 (起家)").tag(1)
+                            Text("2: 南").tag(2)
+                            Text("3: 西").tag(3)
+                            Text("4: 北").tag(4)
+                        }
+                        .foregroundColor(.blue)
+                    }
                 }
             }
             
@@ -70,9 +60,16 @@ struct GameInputView: View {
             }
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity, alignment: .center)
-            .disabled(inputs.contains(where: { $0.player == nil }) || inputs.contains(where: { Int($0.scoreString) == nil }))
+            .disabled(inputs.contains(where: { Int($0.scoreString) == nil }))
         }
         .navigationTitle("新規半荘入力")
+        .onAppear {
+            if inputs.isEmpty, let sessionPlayers = session.players, sessionPlayers.count == 4 {
+                inputs = sessionPlayers.enumerated().map { (index, p) in
+                    GameScoreInput(player: p, seatOrder: index + 1)
+                }
+            }
+        }
     }
     
     private func autoCalculate4th() {
@@ -91,6 +88,13 @@ struct GameInputView: View {
         }
     }
     
+    private func checkTieBreaker() {
+        let scores = inputs.compactMap { Int($0.scoreString) }
+        let uniqueScores = Set(scores)
+        // If there are duplicate valid scores, we need tie breaker
+        needsTieBreaker = (scores.count == 4 && uniqueScores.count < 4)
+    }
+    
     private func saveGame() {
         guard let settings = settingsArray.first else { return }
         
@@ -101,24 +105,21 @@ struct GameInputView: View {
             return
         }
         
-        let playerIds = inputs.compactMap { $0.player?.id }
-        if Set(playerIds).count != 4 {
-            errorMessage = "4人の異なるプレイヤーを選択してください。"
-            return
+        if needsTieBreaker {
+            let seats = inputs.map { $0.seatOrder }
+            if Set(seats).count != 4 {
+                errorMessage = "同着が発生しています。席順（起家〜北家）はそれぞれ異なるものを選択してください。"
+                return
+            }
         }
         
-        let seats = inputs.map { $0.seatOrder }
-        if Set(seats).count != 4 {
-            errorMessage = "席順（起家〜北家）はそれぞれ異なるものを選択してください。"
-            return
-        }
-        
+        // Chip count is now processed at session end, so pass 0 per game
         let scoreInputs = inputs.map { input in
             ScoreInput(
-                playerId: input.player!.id,
+                playerId: input.player.id,
                 rawScore: Int(input.scoreString)!,
-                chipCount: input.chips,
-                tieBreakerRank: input.seatOrder
+                chipCount: 0,
+                tieBreakerRank: needsTieBreaker ? input.seatOrder : nil
             )
         }
         
@@ -129,15 +130,14 @@ struct GameInputView: View {
             modelContext.insert(game)
             game.dailySession = session
             
-            for (i, input) in inputs.enumerated() {
-                let p = input.player!
+            for input in inputs {
+                let p = input.player
                 let result = results.first(where: { $0.playerId == p.id })!
                 
                 let gameScore = PlayerGameScore(
                     player: p,
                     rawScore: Int(input.scoreString)!,
-                    seatOrder: input.seatOrder,
-                    chipCount: input.chips
+                    seatOrder: needsTieBreaker ? input.seatOrder : nil
                 )
                 gameScore.finalScore = result.finalScore
                 gameScore.rank = result.rank

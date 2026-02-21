@@ -14,15 +14,15 @@ final class PlayerGameScore {
     var rank: Int = 1
     var chipCount: Int = 0
     
-    // Added for tie-breaker prompt indicating seat priority explicitly
-    var seatOrder: Int = 0 // 1: East, 2: South, 3: West, 4: North
+    // Seat order is only needed if there was a tie to break. Optional.
+    var seatOrder: Int? = nil 
     
-    init(player: Player?, rawScore: Int, seatOrder: Int, chipCount: Int = 0) {
+    init(player: Player?, rawScore: Int, seatOrder: Int? = nil) {
         self.id = UUID()
         self.player = player
         self.rawScore = rawScore
         self.seatOrder = seatOrder
-        self.chipCount = chipCount
+        self.chipCount = 0 // Chips moved to session, kept here 0 for backward logic compatibility if needed or removed
     }
 }
 

@@ -13,7 +13,7 @@ struct PlayersListView: View {
             ForEach(players) { player in
                 VStack(alignment: .leading) {
                     Text(player.name).font(.headline)
-                    Text("対局数: \(player.totalGames) 半荘 | 累計スコア: \(String(format: "%.1f", player.totalScore))")
+                    Text("対局数: \(player.totalGames)半荘 | 累計スコア: \(String(format: "%.1f", player.totalScore))")
                         .font(.subheadline)
                     Text("平均順位: \(String(format: "%.2f", player.averageRank)) | 連対率 (Top-2): \(String(format: "%.1f%%", player.top2Rate * 100))")
                         .font(.caption)

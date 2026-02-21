@@ -11,6 +11,10 @@ struct ContentView: View {
                 Section("本日の対局") {
                     if let today = sessions.first(where: { Calendar.current.isDateInToday($0.date) }) {
                         NavigationLink("本日の対局を再開", destination: DailySessionView(session: today))
+                        Button("新しい対局を開始") {
+                            let newSession = DailySession(date: Date())
+                            modelContext.insert(newSession)
+                        }
                     } else {
                         Button("本日の対局を開始") {
                             let newSession = DailySession(date: Date())

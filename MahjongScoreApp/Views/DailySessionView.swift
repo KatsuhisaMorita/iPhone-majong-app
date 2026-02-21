@@ -8,7 +8,7 @@ struct DailySessionView: View {
         List {
             Section("概要") {
                 Text("日付: \(session.date.formatted(date: .abbreviated, time: .omitted))")
-                Text("プレイ数: \(session.games.count) 半荘")
+                Text("プレイ数: \(session.games.count)半荘")
             }
             
             Section("本日の合計成績") {

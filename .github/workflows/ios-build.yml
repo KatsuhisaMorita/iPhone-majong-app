@@ -42,5 +42,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MahjongScoreApp-ipa
+          name: MahjongScoreApp-ipa.zip
           path: build/MahjongScoreApp.ipa
